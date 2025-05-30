@@ -1,17 +1,25 @@
-name: Deploy Frontend to GKE
+name: Frontend CI/CD
 
 on:
   push:
     branches:
+      - develop
       - main
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
+  GKE_ZONE: ${{ secrets.GKE_ZONE }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }}
+  GKE_SA_KEY: ${{ secrets.GKE_SA_KEY }}
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy Frontend
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout frontend code
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
@@ -20,28 +28,27 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/hotel-inventory-frontend:latest
+          tags: ${{ env.DOCKER_USERNAME }}/hotel-inventory-frontend:latest
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/auth@v2
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          credentials_json: ${{ secrets.GKE_SA_KEY }}
+          service_account_key: ${{ env.GKE_SA_KEY }}
+          project_id: ${{ env.GKE_PROJECT }}
 
-      - name: Configure GKE credentials
+      - name: Configure kubectl
         run: |
-          gcloud config set project ${{ secrets.GKE_PROJECT }}
-          gcloud container clusters get-credentials ${{ secrets.GKE_CLUSTER }} --zone ${{ secrets.GKE_ZONE }}
+          gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GKE_PROJECT
 
       - name: Deploy to GKE
         run: |
-          kubectl apply -f https://raw.githubusercontent.com/sar-avana/hotel-inventory-infra/main/k8s/frontend-deployment.yaml
-          kubectl apply -f https://raw.githubusercontent.com/sar-avana/hotel-inventory-infra/main/k8s/frontend-service.yaml
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/frontend-service.yaml
