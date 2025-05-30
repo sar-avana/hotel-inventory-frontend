@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: saravanan777/invman-frontend:fixed-v1
+        image: saravanan777/hotel-inventory-frontend:latest
         imagePullPolicy: Always
         ports:
           - containerPort: 80
