@@ -32,7 +32,7 @@ export class LoginComponent {
       }
     };
 
-    this.http.post<any>('/login', payload).subscribe({
+    this.http.post<any>('/api/login', payload).subscribe({
       next: (response) => {
         console.log('Login response:', response);
         this.authService.setToken(response.token); // ✅ Store token using service
