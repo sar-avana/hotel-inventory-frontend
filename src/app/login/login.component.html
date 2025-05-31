@@ -1,5 +1,5 @@
 <h2>Login</h2>
-<form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+<form (ngSubmit)="onSubmit(); $event.preventDefault()" #loginForm="ngForm">
   <div>
     <label>Email:</label>
     <input type="email" name="email" [(ngModel)]="email" required />
