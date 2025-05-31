@@ -23,12 +23,6 @@ export class LoginComponent {
       user: {
         email: this.email,
         password: this.password
-      },
-      session: {
-        user: {
-          email: this.email,
-          password: this.password
-        }
       }
     };
 
