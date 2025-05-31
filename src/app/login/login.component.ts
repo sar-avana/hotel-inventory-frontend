@@ -25,6 +25,7 @@ export class LoginComponent {
         password: this.password
       }
     };
+    console.log("Login payload:", payload);
 
     this.http.post<any>('/api/login', payload).subscribe({
       next: (response) => {
