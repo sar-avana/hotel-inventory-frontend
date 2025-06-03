@@ -23,19 +23,20 @@ export class LoginComponent {
       user: {
         email: this.email,
         password: this.password
-      },
-      session: {
-        user: {
-          email: this.email,
-          password: this.password
-        }
       }
     };
 
-    this.http.post<any>('http://localhost:3000/login', payload).subscribe({
+    console.log("Login payload:", payload);
+
+    this.http.post<any>('/api/login', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).subscribe({
       next: (response) => {
         console.log('Login response:', response);
-        this.authService.setToken(response.token); // ✅ Store token using service
+        this.authService.setToken(response.token); // Store token if provided
         this.router.navigate(['/products']);
       },
       error: () => {
@@ -43,4 +44,5 @@ export class LoginComponent {
       }
     });
   }
+
 }

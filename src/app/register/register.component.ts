@@ -35,7 +35,7 @@ export class RegisterComponent {
       }
     };
 
-    this.http.post<any>('http://localhost:3000/signup', payload).subscribe({
+    this.http.post<any>('/api/signup', payload).subscribe({
       next: (response) => {
         this.successMessage = 'Registration successful! You can now login.';
         this.errorMessage = '';
